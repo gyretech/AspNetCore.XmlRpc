@@ -1,12 +1,16 @@
-﻿using System;
+﻿using HtmlTags;
+using Microsoft.AspNetCore.Mvc;
+using System;
 using System.IO;
 using System.Reflection;
 using System.Text;
-using System.Web.Mvc;
-using System.Web.UI;
+using static HtmlTags.HtmlTextWriter;
 
 namespace XmlRpcMvc
 {
+    /// <summary>
+    /// HtmlTextWriter is not available in https://github.com/dotnet/corefx/issues/24169
+    /// </summary>
     public class XmlRpcOverviewResult : ContentResult
     {
         private readonly bool _generateOverview;
@@ -19,49 +23,48 @@ namespace XmlRpcMvc
             _services = services;
 
             ContentType = "text/html";
-            ContentEncoding = Encoding.UTF8;
         }
 
-        public override void ExecuteResult(ControllerContext context)
+        public override void ExecuteResult(ActionContext context)
         {
             if (!_generateOverview)
             {
-                new HttpNotFoundResult().ExecuteResult(context);
+                new NotFoundResult().ExecuteResult(context);
                 return;
             }
 
-            var title = context.Controller.ValueProvider.GetValue("action").AttemptedValue;
+            var title = context.RouteData.Values["action"] ?? "";
 
             var methods = XmlRpcRequestParser.GetMethods(_services);
 
             using (var stringWriter = new StringWriter())
-            using (var htmlWriter = new HtmlTextWriter(stringWriter))
+            using (var writer = new HtmlTextWriter(stringWriter))
             {
-                htmlWriter.RenderBeginTag(HtmlTextWriterTag.Html);
+                writer.RenderBeginTag(HtmlTextWriterTag.Html);
                 {
-                    htmlWriter.RenderBeginTag(HtmlTextWriterTag.Head);
+                    writer.RenderBeginTag(HtmlTextWriterTag.Head);
                     {
                         // Version Info
-                        htmlWriter.Write("<!--");
-                        htmlWriter.Write("XmlRpcMvc {0}", Assembly.GetExecutingAssembly().GetName().Version);
-                        htmlWriter.Write("-->");
+                        writer.Write("<!--");
+                        writer.Write("XmlRpcMvc {0}", Assembly.GetExecutingAssembly().GetName().Version);
+                        writer.Write("-->");
 
-                        htmlWriter.RenderBeginTag(HtmlTextWriterTag.Title);
+                        writer.RenderBeginTag(HtmlTextWriterTag.Title);
                         {
-                            htmlWriter.Write(title);
+                            writer.Write(title);
                         }
-                        htmlWriter.RenderEndTag();
+                        writer.RenderEndTag();
 
                         // <meta name="robots" content="noindex" />
-                        htmlWriter.AddAttribute(HtmlTextWriterAttribute.Name, "robots");
-                        htmlWriter.AddAttribute(HtmlTextWriterAttribute.Content, "noindex");
-                        htmlWriter.RenderBeginTag(HtmlTextWriterTag.Meta);
-                        htmlWriter.RenderEndTag();
+                        writer.AddAttribute(HtmlTextWriterAttribute.Name, "robots");
+                        writer.AddAttribute(HtmlTextWriterAttribute.Content, "noindex");
+                        writer.RenderBeginTag(HtmlTextWriterTag.Meta);
+                        writer.RenderEndTag();
 
-                        htmlWriter.AddAttribute(HtmlTextWriterAttribute.Type, "text/css");
-                        htmlWriter.RenderBeginTag(HtmlTextWriterTag.Style);
+                        writer.AddAttribute(HtmlTextWriterAttribute.Type, "text/css");
+                        writer.RenderBeginTag(HtmlTextWriterTag.Style);
                         {
-                            htmlWriter.Write(@"
+                            writer.Write(@"
 body {
     font-family: Segoe UI Light, Segoe WP Light, Segoe UI, Helvetica, sans-serif;
     padding: 0;
@@ -119,138 +122,138 @@ td {
 }
 ");
                         }
-                        htmlWriter.RenderEndTag();
+                        writer.RenderEndTag();
                     }
-                    htmlWriter.RenderEndTag();
+                    writer.RenderEndTag();
 
-                    htmlWriter.RenderBeginTag(HtmlTextWriterTag.Body);
+                    writer.RenderBeginTag(HtmlTextWriterTag.Body);
                     {
-                        htmlWriter.RenderBeginTag(HtmlTextWriterTag.H1);
+                        writer.RenderBeginTag(HtmlTextWriterTag.H1);
                         {
-                            htmlWriter.Write(title);
+                            writer.Write(title);
                         }
-                        htmlWriter.RenderEndTag();
+                        writer.RenderEndTag();
 
-                        htmlWriter.RenderBeginTag(HtmlTextWriterTag.Div);
+                        writer.RenderBeginTag(HtmlTextWriterTag.Div);
                         {
-                            htmlWriter.RenderBeginTag(HtmlTextWriterTag.P);
+                            writer.RenderBeginTag(HtmlTextWriterTag.P);
                             {
-                                htmlWriter.Write("The following methods are supported:");
+                                writer.Write("The following methods are supported:");
                             }
-                            htmlWriter.RenderEndTag();
+                            writer.RenderEndTag();
 
                             // Method Names
-                            htmlWriter.RenderBeginTag(HtmlTextWriterTag.Ul);
+                            writer.RenderBeginTag(HtmlTextWriterTag.Ul);
                             {
                                 foreach (var method in methods)
                                 {
                                     // Method Name
-                                    htmlWriter.RenderBeginTag(HtmlTextWriterTag.Li);
+                                    writer.RenderBeginTag(HtmlTextWriterTag.Li);
                                     {
-                                        htmlWriter.AddAttribute(HtmlTextWriterAttribute.Href, string.Concat("#", method.Value.Name));
-                                        htmlWriter.RenderBeginTag(HtmlTextWriterTag.A);
+                                        writer.AddAttribute(HtmlTextWriterAttribute.Href, string.Concat("#", method.Value.Name));
+                                        writer.RenderBeginTag(HtmlTextWriterTag.A);
                                         {
-                                            htmlWriter.Write(method.Value.Name);
+                                            writer.Write(method.Value.Name);
                                         }
-                                        htmlWriter.RenderEndTag();
+                                        writer.RenderEndTag();
                                     }
-                                    htmlWriter.RenderEndTag();
+                                    writer.RenderEndTag();
                                 }
                             }
-                            htmlWriter.RenderEndTag();
+                            writer.RenderEndTag();
 
                             foreach (var method in methods)
                             {
                                 var mi = method.Value.MethodInfo;
 
-                                htmlWriter.RenderBeginTag(HtmlTextWriterTag.Div);
+                                writer.RenderBeginTag(HtmlTextWriterTag.Div);
                                 {
                                     // Method name
-                                    htmlWriter.RenderBeginTag(HtmlTextWriterTag.H2);
+                                    writer.RenderBeginTag(HtmlTextWriterTag.H2);
                                     {
-                                        htmlWriter.AddAttribute(HtmlTextWriterAttribute.Name, method.Value.Name);
-                                        htmlWriter.RenderBeginTag(HtmlTextWriterTag.A);
+                                        writer.AddAttribute(HtmlTextWriterAttribute.Name, method.Value.Name);
+                                        writer.RenderBeginTag(HtmlTextWriterTag.A);
                                         {
-                                            htmlWriter.Write(method.Value.Name);
+                                            writer.Write(method.Value.Name);
                                         }
-                                        htmlWriter.RenderEndTag();
+                                        writer.RenderEndTag();
                                     }
-                                    htmlWriter.RenderEndTag();
+                                    writer.RenderEndTag();
 
                                     // "Parameters" headline
-                                    htmlWriter.RenderBeginTag(HtmlTextWriterTag.H3);
+                                    writer.RenderBeginTag(HtmlTextWriterTag.H3);
                                     {
-                                        htmlWriter.Write("Parameters");
+                                        writer.Write("Parameters");
                                     }
-                                    htmlWriter.RenderEndTag();
+                                    writer.RenderEndTag();
 
                                     // "Parameters" table
-                                    htmlWriter.RenderBeginTag(HtmlTextWriterTag.Table);
+                                    writer.RenderBeginTag(HtmlTextWriterTag.Table);
                                     {
                                         var parameters = mi.GetParameters();
 
                                         foreach (var parameter in parameters)
                                         {
-                                            htmlWriter.RenderBeginTag(HtmlTextWriterTag.Tr);
+                                            writer.RenderBeginTag(HtmlTextWriterTag.Tr);
                                             {
-                                                htmlWriter.AddStyleAttribute(HtmlTextWriterStyle.Width, "30%");
-                                                htmlWriter.RenderBeginTag(HtmlTextWriterTag.Td);
+                                                writer.AddAttribute(HtmlTextWriterAttribute.Style, "width:30%");
+                                                writer.RenderBeginTag(HtmlTextWriterTag.Td);
                                                 {
-                                                    htmlWriter.Write(parameter.ParameterType.Name);
+                                                    writer.Write(parameter.ParameterType.Name);
                                                 }
-                                                htmlWriter.RenderEndTag();
+                                                writer.RenderEndTag();
 
-                                                htmlWriter.RenderBeginTag(HtmlTextWriterTag.Td);
+                                                writer.RenderBeginTag(HtmlTextWriterTag.Td);
                                                 {
-                                                    htmlWriter.Write(parameter.Name);
+                                                    writer.Write(parameter.Name);
                                                 }
-                                                htmlWriter.RenderEndTag();
+                                                writer.RenderEndTag();
                                             }
-                                            htmlWriter.RenderEndTag();
+                                            writer.RenderEndTag();
                                         }
                                     }
-                                    htmlWriter.RenderEndTag();
+                                    writer.RenderEndTag();
 
                                     // "Return Value" headline
-                                    htmlWriter.RenderBeginTag(HtmlTextWriterTag.H3);
+                                    writer.RenderBeginTag(HtmlTextWriterTag.H3);
                                     {
-                                        htmlWriter.Write("Return Value");
+                                        writer.Write("Return Value");
                                     }
-                                    htmlWriter.RenderEndTag();
+                                    writer.RenderEndTag();
 
                                     // "Return Value" table
-                                    htmlWriter.RenderBeginTag(HtmlTextWriterTag.Table);
+                                    writer.RenderBeginTag(HtmlTextWriterTag.Table);
                                     {
-                                        htmlWriter.RenderBeginTag(HtmlTextWriterTag.Tr);
+                                        writer.RenderBeginTag(HtmlTextWriterTag.Tr);
                                         {
-                                            htmlWriter.AddStyleAttribute(HtmlTextWriterStyle.Width, "30%");
-                                            htmlWriter.RenderBeginTag(HtmlTextWriterTag.Td);
+                                            writer.AddAttribute(HtmlTextWriterAttribute.Style, "width:30%");
+                                            writer.RenderBeginTag(HtmlTextWriterTag.Td);
                                             {
-                                                htmlWriter.Write(mi.ReturnType.Name);
+                                                writer.Write(mi.ReturnType.Name);
                                             }
-                                            htmlWriter.RenderEndTag();
+                                            writer.RenderEndTag();
 
-                                            htmlWriter.RenderBeginTag(HtmlTextWriterTag.Td);
+                                            writer.RenderBeginTag(HtmlTextWriterTag.Td);
                                             {
-                                                htmlWriter.Write(
+                                                writer.Write(
                                                     !string.IsNullOrEmpty(method.Value.Description)
                                                         ? method.Value.Description
                                                         : "-");
                                             }
-                                            htmlWriter.RenderEndTag();
+                                            writer.RenderEndTag();
                                         }
-                                        htmlWriter.RenderEndTag();
+                                        writer.RenderEndTag();
                                     }
-                                    htmlWriter.RenderEndTag();
+                                    writer.RenderEndTag();
                                 }
-                                htmlWriter.RenderEndTag();
+                                writer.RenderEndTag();
                             }
                         }
-                        htmlWriter.RenderEndTag();
+                        writer.RenderEndTag();
                     }
-                    htmlWriter.RenderEndTag();
+                    writer.RenderEndTag();
                 }
-                htmlWriter.RenderEndTag();
+                writer.RenderEndTag();
 
                 Content = stringWriter.ToString();
                 base.ExecuteResult(context);

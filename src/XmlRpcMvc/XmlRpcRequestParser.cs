@@ -1,11 +1,12 @@
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Controllers;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
-using System.Web.Mvc;
-using System.Xml;
 using System.Linq;
 using System.Reflection;
+using System.Xml;
 using XmlRpcMvc.Common;
 using XmlRpcMvc.Extensions;
 
@@ -96,8 +97,7 @@ namespace XmlRpcMvc
 
         internal static object ExecuteRequestedMethod(
             XmlRpcRequest request,
-            XmlRpcMethodDescriptor methodDescriptor,
-            ControllerBase controller)
+            XmlRpcMethodDescriptor methodDescriptor, ActionContext context)
         {
             var parameters = new List<object>();
             var method = methodDescriptor.MethodInfo;
@@ -200,10 +200,8 @@ namespace XmlRpcMvc
                 instanceType = _s_getImplementation(method.DeclaringType);
             }
 
-            var instance =
-                controller.GetType() == instanceType
-                    ? controller
-                    : Activator.CreateInstance(instanceType);
+            // ControllerContext is not avalilable in ASP.NET Core and all instance should be instantiated directly through instanceType though controller name and action name can be retrieved through context.
+            var instance = Activator.CreateInstance(instanceType);
 
             try
             {
@@ -211,7 +209,7 @@ namespace XmlRpcMvc
                     "XmlRpcMvc: Invoking method {0} with '{1}'",
                     method.Name,
                     string.Join(", ", parameters));
-                
+
                 return method.Invoke(instance, parameters.ToArray());
             }
             catch (XmlRpcFaultException exception)

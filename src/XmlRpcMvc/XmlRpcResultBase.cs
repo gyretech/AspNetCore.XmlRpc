@@ -1,6 +1,6 @@
+using Microsoft.AspNetCore.Mvc;
 using System;
 using System.Text;
-using System.Web.Mvc;
 using System.Xml;
 using XmlRpcMvc.Extensions;
 
@@ -22,13 +22,13 @@ namespace XmlRpcMvc
             set { _generateServiceOverview = value; }
         }
 
-        public override void ExecuteResult(ControllerContext context)
+        public override void ExecuteResult(ActionContext context)
         {
             var request = context.HttpContext.Request;
 
             if (GenerateServiceOverview &&
-                request.HttpMethod.Equals(
-                    HttpVerbs.Get.ToString(), 
+                request.Method.Equals(
+                    HttpVerbs.Get.ToString(),
                     StringComparison.OrdinalIgnoreCase))
             {
                 new XmlRpcOverviewResult(GenerateServiceOverview, _services)
@@ -37,7 +37,7 @@ namespace XmlRpcMvc
                 return;
             }
 
-            if (!request.HttpMethod.Equals(
+            if (!request.Method.Equals(
                     HttpVerbs.Post.ToString(),
                     StringComparison.OrdinalIgnoreCase))
             {
@@ -46,7 +46,7 @@ namespace XmlRpcMvc
 
             var requestInfo =
                 XmlRpcRequestParser.GetRequestInformation(
-                    request.InputStream);
+                    request.Body);
 
             if (string.IsNullOrWhiteSpace(requestInfo.MethodName))
             {
@@ -70,9 +70,9 @@ namespace XmlRpcMvc
 
             var result =
                 XmlRpcRequestParser.ExecuteRequestedMethod(
-                    requestInfo, methodInfo, context.Controller);
+                    requestInfo, methodInfo, context);
 
-            var response = context.RequestContext.HttpContext.Response;
+            var response = context.HttpContext.Response;
             response.ContentType = "text/xml";
 
             var settings =
@@ -84,7 +84,7 @@ namespace XmlRpcMvc
                 };
 
             using (var writer =
-                XmlWriter.Create(response.OutputStream, settings))
+                XmlWriter.Create(response.Body, settings))
             {
                 if (methodInfo.ResponseType == XmlRpcResponseType.Wrapped)
                 {
