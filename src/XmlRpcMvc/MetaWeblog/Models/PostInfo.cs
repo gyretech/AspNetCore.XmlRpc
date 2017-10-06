@@ -1,20 +1,20 @@
-using System;
+﻿using System;
 using System.Runtime.Serialization;
 
-namespace $rootnamespace$.XmlRpc.Models
+namespace XmlRpcMvc.MetaWeblog.Models
 {
     public class PostInfo
     {
         [DataMember(Name = "title")]
         public string Title { get; set; }
-		
-		[DataMember(Name = "description")]
+
+        [DataMember(Name = "description")]
         public string Description { get; set; }
-		
-		[DataMember(Name = "dateCreated")]
+
+        [DataMember(Name = "dateCreated")]
         public DateTime DateCreated { get; set; }
-		
-		[DataMember(Name = "categories")]
+
+        [DataMember(Name = "categories")]
         public string[] Categories { get; set; }
     }
 }

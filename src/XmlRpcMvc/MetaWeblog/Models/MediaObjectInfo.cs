@@ -1,6 +1,6 @@
-using System.Runtime.Serialization;
+﻿using System.Runtime.Serialization;
 
-namespace $rootnamespace$.XmlRpc.Models
+namespace XmlRpcMvc.MetaWeblog.Models
 {
     public class MediaObjectInfo
     {

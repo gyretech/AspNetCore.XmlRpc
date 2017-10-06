@@ -4,8 +4,15 @@
     <ApplicationIcon />
     <OutputType>Library</OutputType>
     <StartupObject />
-    <GeneratePackageOnBuild>false</GeneratePackageOnBuild>
-    <PackageRequireLicenseAcceptance>false</PackageRequireLicenseAcceptance>
+    <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
+    <PackageRequireLicenseAcceptance>true</PackageRequireLicenseAcceptance>
+    <Authors>Fahao Tang</Authors>
+    <Version>1.0.0</Version>
+    <Description>XmlRpc for ASP.NET Core 2.0 MVC</Description>
+    <PackageLicenseUrl>https://github.com/FahaoTang/AspNetCore.XmlRpcMvc/blob/master/LICENSE</PackageLicenseUrl>
+    <Company />
+    <PackageProjectUrl></PackageProjectUrl>
+    <RepositoryUrl>https://github.com/FahaoTang/AspNetCore.XmlRpcMvc</RepositoryUrl>
   </PropertyGroup>
   <ItemGroup>
     <Folder Include="Properties\" />

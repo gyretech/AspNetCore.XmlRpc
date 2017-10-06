@@ -1,13 +1,13 @@
-using System.Runtime.Serialization;
+﻿using System.Runtime.Serialization;
 
-namespace $rootnamespace$.XmlRpc.Models
+namespace XmlRpcMvc.MetaWeblog.Models
 {
     public class CategoryInfo
     {
         [DataMember(Name = "description")]
         public string Description { get; set; }
-		
-		[DataMember(Name = "title")]
+
+        [DataMember(Name = "title")]
         public string Title { get; set; }
     }
 }
