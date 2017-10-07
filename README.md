@@ -2,7 +2,7 @@
 XML-RPC .NET Standard library with MetaWeblog implementations for ASP.NET Core 2.x
 
 # Build Status
-[![aspnetcore_xmlrpc MyGet Build Status](https://www.myget.org/BuildSource/Badge/aspnetcore_xmlrpc?identifier=083bc4fc-b05d-48f7-b614-c24e3ffcfd5a)](https://www.myget.org/)
+![build status](https://www.myget.org/BuildSource/Badge/aspnetcore_xmlrpc?identifier=083bc4fc-b05d-48f7-b614-c24e3ffcfd5a)
 
 # Detail
 Why do we need XML-RPC if we have advanced technology to use such as SOAP or WCF?
