@@ -1,5 +1,7 @@
 ﻿using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
+using System;
 using System.Threading.Tasks;
 
 namespace XmlRpcMvc.MetaWeblog
@@ -8,23 +10,29 @@ namespace XmlRpcMvc.MetaWeblog
     {
         private ILogger logger;
         private readonly RequestDelegate next;
-        private string _urlEndpoint;
 
-        public MetaWeblogMiddleware(RequestDelegate next, ILoggerFactory loggerFactory, string urlEndpoint)
+        public MetaWeblogMiddleware(RequestDelegate next, ILoggerFactory loggerFactory, IOptions<XmlRpcOptions> options)
         {
             this.next = next;
-            logger = loggerFactory.CreateLogger<MetaWeblogMiddleware>(); ;
-            _urlEndpoint = urlEndpoint;
+            Options = options;
+            logger = loggerFactory.CreateLogger<MetaWeblogMiddleware>();
         }
+
+        public IOptions<XmlRpcOptions> Options { get; }
 
         /// <summary>
         /// Response to the request
         /// </summary>
         /// <param name="context"></param>
+        /// <param name="rpcService"></param>
+        /// <param name="provider"></param>
         /// <returns></returns>
-        public async Task Invoke(HttpContext context)
+        public async Task Invoke(HttpContext context, IXmlRpcService rpcService, IMetaWeblogEndpointProvider provider)
         {
-            //TODO: add details of using 
+            var xmlRpcContext = new XmlRpcContext(context, Options?.Value, new Type[] { rpcService.GetType() });
+            var result = await provider.ProcessAsync(xmlRpcContext);
+            if (result)
+                return;
             await next.Invoke(context);
         }
 

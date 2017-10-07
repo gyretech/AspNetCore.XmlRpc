@@ -1,41 +1,42 @@
 ﻿using HtmlTags;
-using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Http;
 using System;
 using System.IO;
+using System.Linq;
 using System.Reflection;
-using System.Text;
+using System.Threading.Tasks;
 using static HtmlTags.HtmlTextWriter;
 
-namespace XmlRpcMvc
+namespace XmlRpcMvc.MetaWeblog
 {
     /// <summary>
     /// HtmlTextWriter is not available in https://github.com/dotnet/corefx/issues/24169
     /// </summary>
-    public class XmlRpcOverviewResult : ContentResult
+    public class XmlRpcRsdHandler : IXmlRpcHandler
     {
-        private readonly bool _generateOverview;
-        private readonly Type[] _services;
-
-        public XmlRpcOverviewResult(
-            bool generateOverview, params Type[] services)
+        public XmlRpcRsdHandler()
         {
-            _generateOverview = generateOverview;
-            _services = services;
-
-            ContentType = "text/html";
         }
 
-        public override void ExecuteResult(ActionContext context)
+        public bool CanProcess(XmlRpcContext context)
         {
-            if (!_generateOverview)
+            return context.HttpContext.Request.Path.StartsWithSegments(context.Options.RsdEndpoint);
+        }
+
+        public async Task ProcessRequestAsync(XmlRpcContext context)
+        {
+            var request = context.HttpContext.Request;
+
+            if (!request.Method.Equals(
+                    HttpVerbs.Post.ToString(),
+                    StringComparison.OrdinalIgnoreCase))
             {
-                new NotFoundResult().ExecuteResult(context);
-                return;
+                throw new InvalidOperationException();
             }
 
-            var title = context.RouteData.Values["action"] ?? "";
+            var title = string.Concat("XML-RPC Methods for ", string.Join(",", context.Services.Select(s => s.FullName)));
 
-            var methods = XmlRpcRequestParser.GetMethods(_services);
+            var methods = XmlRpcRequestParser.GetMethods(context.Services);
 
             using (var stringWriter = new StringWriter())
             using (var writer = new HtmlTextWriter(stringWriter))
@@ -255,8 +256,9 @@ td {
                 }
                 writer.RenderEndTag();
 
-                Content = stringWriter.ToString();
-                base.ExecuteResult(context);
+                context.HttpContext.Response.ContentType = "text/xml";
+
+                await context.HttpContext.Response.WriteAsync(stringWriter.ToString());
             }
         }
     }

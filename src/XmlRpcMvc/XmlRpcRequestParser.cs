@@ -1,5 +1,3 @@
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.Controllers;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -7,7 +5,6 @@ using System.IO;
 using System.Linq;
 using System.Reflection;
 using System.Xml;
-using XmlRpcMvc.Common;
 using XmlRpcMvc.Extensions;
 
 namespace XmlRpcMvc
@@ -97,7 +94,7 @@ namespace XmlRpcMvc
 
         internal static object ExecuteRequestedMethod(
             XmlRpcRequest request,
-            XmlRpcMethodDescriptor methodDescriptor, ActionContext context)
+            XmlRpcMethodDescriptor methodDescriptor, XmlRpcContext context)
         {
             var parameters = new List<object>();
             var method = methodDescriptor.MethodInfo;
@@ -147,8 +144,7 @@ namespace XmlRpcMvc
                         {
                             var nameKey = property.GetSerializationName();
 
-                            object value;
-                            if (values.TryGetValue(nameKey, out value))
+                            if (values.TryGetValue(nameKey, out object value))
                             {
                                 property.SetValue(element, value);
                             }
@@ -179,10 +175,9 @@ namespace XmlRpcMvc
                     {
                         var nameKey = property.GetSerializationName();
 
-                        object value;
                         if (complexInstanceParameters.TryGetValue(
                             nameKey,
-                            out value))
+                            out object value))
                         {
                             property.SetValue(complexInstance, value);
                         }

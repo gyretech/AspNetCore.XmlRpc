@@ -1,4 +1,4 @@
-﻿namespace XmlRpcMvc.Common
+﻿namespace XmlRpcMvc
 {
     public interface IXmlRpcService
     {}

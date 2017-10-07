@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Builder;
 using Microsoft.Extensions.DependencyInjection;
-using XmlRpcMvc.Common;
+using Microsoft.Extensions.Options;
+using System.Collections.Generic;
 
 namespace XmlRpcMvc.MetaWeblog
 {
@@ -9,13 +10,27 @@ namespace XmlRpcMvc.MetaWeblog
         /// <summary>
         /// Register services
         /// </summary>
-        /// <typeparam name="TRpcXmlService"></typeparam>
+        /// <typeparam name="TXmlRpcService"></typeparam>
         /// <param name="services"></param>
         /// <returns></returns>
-        public static IServiceCollection AddMetaWeblog<TRpcXmlService, TMetaWeblogEndpointService>(this IServiceCollection services) where TRpcXmlService : class, IXmlRpcService where TMetaWeblogEndpointService : class, IMetaWeblogEndpointService
+        public static IServiceCollection AddMetaWeblog<TXmlRpcService, TMetaWeblogEndpointService>(this IServiceCollection services) where TXmlRpcService : class, IXmlRpcService where TMetaWeblogEndpointService : class, IMetaWeblogEndpointProvider
         {
-            return services.AddScoped<IXmlRpcService, TRpcXmlService>()
-                .AddScoped<IMetaWeblogEndpointService, TMetaWeblogEndpointService>();
+            // register handlers
+            services.AddSingleton<IEnumerable<IXmlRpcHandler>>(new List<IXmlRpcHandler>()
+            {
+                new XmlRpcOverviewHandler(),
+                new XmlRpcHandler(),
+                new XmlRpcRsdHandler()
+            }
+            );
+
+            // XmlRpc services
+            services.AddScoped<IXmlRpcService, TXmlRpcService>().AddScoped<TXmlRpcService>();
+
+            // Provider
+            services.AddScoped<IMetaWeblogEndpointProvider, TMetaWeblogEndpointService>();
+
+            return services;
 
         }
 
@@ -25,9 +40,9 @@ namespace XmlRpcMvc.MetaWeblog
         /// <param name="builder"></param>
         /// <param name="apiUri"></param>
         /// <returns></returns>
-        public static IApplicationBuilder UseMetaWeblog(this IApplicationBuilder builder, string apiUri)
+        public static IApplicationBuilder UseMetaWeblog(this IApplicationBuilder builder, IOptions<XmlRpcOptions> options)
         {
-            return builder.UseMiddleware<MetaWeblogMiddleware>(apiUri);
+            return builder.UseMiddleware<MetaWeblogMiddleware>(options);
         }
     }
 }

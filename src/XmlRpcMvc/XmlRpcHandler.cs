@@ -1,41 +1,26 @@
-using Microsoft.AspNetCore.Mvc;
 using System;
 using System.Text;
+using System.Threading.Tasks;
 using System.Xml;
 using XmlRpcMvc.Extensions;
 
 namespace XmlRpcMvc
 {
-    public class XmlRpcResult : ActionResult
+    public class XmlRpcHandler : IXmlRpcHandler
     {
-        private readonly Type[] _services;
-
-        public XmlRpcResult(params Type[] services)
+        public XmlRpcHandler()
         {
-            _services = services;
+
         }
 
-        private bool _generateServiceOverview = true;
-        public bool GenerateServiceOverview
+        public bool CanProcess(XmlRpcContext context)
         {
-            get { return _generateServiceOverview; }
-            set { _generateServiceOverview = value; }
+            return context.HttpContext.Request.Path.StartsWithSegments(context.Options.Endpoint);
         }
 
-        public override void ExecuteResult(ActionContext context)
+        public Task ProcessRequestAsync(XmlRpcContext context)
         {
             var request = context.HttpContext.Request;
-
-            if (GenerateServiceOverview &&
-                request.Method.Equals(
-                    HttpVerbs.Get.ToString(),
-                    StringComparison.OrdinalIgnoreCase))
-            {
-                new XmlRpcOverviewResult(GenerateServiceOverview, _services)
-                    .ExecuteResult(context);
-
-                return;
-            }
 
             if (!request.Method.Equals(
                     HttpVerbs.Post.ToString(),
@@ -55,7 +40,7 @@ namespace XmlRpcMvc
             }
 
             var methodInfo =
-                XmlRpcRequestParser.GetRequestedMethod(requestInfo, _services);
+                XmlRpcRequestParser.GetRequestedMethod(requestInfo, context.Services);
 
             if (methodInfo == null)
             {
@@ -89,10 +74,18 @@ namespace XmlRpcMvc
                 if (methodInfo.ResponseType == XmlRpcResponseType.Wrapped)
                 {
                     WriteWrappedResponse(writer, result);
-                    return;
+                    return Task.CompletedTask;
                 }
                 WriteRawResponse(writer, result);
+                return Task.CompletedTask;
             }
+        }
+
+        private bool _generateServiceOverview = true;
+        public bool GenerateServiceOverview
+        {
+            get { return _generateServiceOverview; }
+            set { _generateServiceOverview = value; }
         }
 
         private static void WriteRawResponse(
@@ -209,6 +202,5 @@ namespace XmlRpcMvc
             }
             xmlWriter.WriteEndElement();
         }
-
     }
 }
