@@ -76,13 +76,15 @@ body > div {
 body > div > div {
     margin-bottom: 50px;
     border-top: 1px solid #CCCCCC;
-    width: 90%;
+    width: 50%;
 }
 
 h1 {
     background-color: #1BA1E2;
     color: white;
     padding: 5px 20px;
+    text-wrap: normal;
+    word-break: break-all;
 }
 
 h2 {
@@ -148,12 +150,10 @@ td {
                                     // Method Name
                                     writer.RenderBeginTag(HtmlTextWriterTag.Li);
                                     {
-                                        writer.AddAttribute(HtmlTextWriterAttribute.Href, string.Concat("#", method.Value.Name));
-                                        writer.RenderBeginTag(HtmlTextWriterTag.A);
-                                        {
-                                            writer.Write(method.Value.Name);
-                                        }
-                                        writer.RenderEndTag();
+                                        writer.Write("<a ");
+                                        writer.WriteAttribute("href", "#" + method.Value.Name, false);
+                                        writer.Write($">{method.Value.Name}</a>");
+
                                     }
                                     writer.RenderEndTag();
                                 }

@@ -13,7 +13,7 @@ namespace AspNetCore.XmlRpc.MetaWeblog
         /// <typeparam name="TXmlRpcService"></typeparam>
         /// <param name="services"></param>
         /// <returns></returns>
-        public static IServiceCollection AddMetaWeblog<TXmlRpcService, TMetaWeblogEndpointService>(this IServiceCollection services) where TXmlRpcService : class, IXmlRpcService where TMetaWeblogEndpointService : class, IMetaWeblogEndpointProvider
+        public static IServiceCollection AddMetaWeblog<TXmlRpcService, TMetaWeblogEndpointService>(this IServiceCollection services) where TXmlRpcService : class, IXmlRpcService, IMetaWeblogXmlRpcService where TMetaWeblogEndpointService : class, IMetaWeblogEndpointProvider
         {
             // register handlers
             services.AddSingleton<IEnumerable<IXmlRpcHandler>>(new List<IXmlRpcHandler>()
