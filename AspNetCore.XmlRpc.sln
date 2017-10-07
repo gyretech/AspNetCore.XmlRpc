@@ -5,6 +5,8 @@ VisualStudioVersion = 15.0.26730.16
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AspNetCore.XmlRpc", "src\XmlRpc\AspNetCore.XmlRpc.csproj", "{479C1A0B-4EB6-4E02-ACDE-19CA98011A82}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AspNetCore.XmlRpc.WebsiteSample", "src\AspNetCore.WebsiteSample\AspNetCore.XmlRpc.WebsiteSample.csproj", "{84BBEB3C-DF57-42D4-8444-495D96B08398}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -15,6 +17,10 @@ Global
 		{479C1A0B-4EB6-4E02-ACDE-19CA98011A82}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{479C1A0B-4EB6-4E02-ACDE-19CA98011A82}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{479C1A0B-4EB6-4E02-ACDE-19CA98011A82}.Release|Any CPU.Build.0 = Release|Any CPU
+		{84BBEB3C-DF57-42D4-8444-495D96B08398}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{84BBEB3C-DF57-42D4-8444-495D96B08398}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{84BBEB3C-DF57-42D4-8444-495D96B08398}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{84BBEB3C-DF57-42D4-8444-495D96B08398}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

@@ -1,4 +1,6 @@
-﻿namespace AspNetCore.XmlRpc
+﻿using AspNetCore.XmlRpc.MetaWeblog;
+
+namespace AspNetCore.XmlRpc
 {
     /// <summary>
     /// Configurations for Xml Rpc
@@ -18,5 +20,10 @@
 
         public string Endpoint { get; set; } = "/api/xmlrpc/endpoint";
 
+        public string EngineName { get; set; } = "AspNetCore.XmlRpc";
+
+        public string HomePageEndpointPattern { get; set; } = "/Blog/{blogId}";
+
+        public string BlogIdTokenName { get; set; } = "blogId";
     }
 }
