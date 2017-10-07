@@ -11,7 +11,7 @@
     <Description>XmlRpc for ASP.NET Core 2.0 MVC</Description>
     <PackageLicenseUrl>https://github.com/FahaoTang/AspNetCore.XmlRpcMvc/blob/master/LICENSE</PackageLicenseUrl>
     <Company />
-    <PackageProjectUrl></PackageProjectUrl>
+    <PackageProjectUrl>https://github.com/FahaoTang/AspNetCore.XmlRpc</PackageProjectUrl>
     <RepositoryUrl>https://github.com/FahaoTang/AspNetCore.XmlRpcMvc</RepositoryUrl>
   </PropertyGroup>
   <ItemGroup>
