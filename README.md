@@ -16,9 +16,13 @@ Detailed documentation will be published at my website [Kosmisch.net](http://kos
 to be added. 
 
 # How to use
-1. Install the package
+## 1. Install the package
+### Nuget PM
+`Install-Package AspNetCore.XmlRpc -Version 1.0.0-alpha.1`
+### MyGet PM
+`PM> Install-Package AspNetCore.XmlRpc -Version 1.0.0-CI00000 -Source https://www.myget.org/F/aspnetcore_xmlrpc/api/v3/index.json`
 
-2. Change appSettings
+## 2. Change appSettings
 Change appSettings.json to add configurations:
 `{
   "Logging": {
@@ -39,8 +43,8 @@ Change appSettings.json to add configurations:
   }
 }`
 
-3. Add services
-.. 3.1
+## 3. Add services
+### 3.1
 `
 public void ConfigureServices(IServiceCollection services)
         {
@@ -53,7 +57,7 @@ public void ConfigureServices(IServiceCollection services)
             services.AddMvc();
         }
 `
-..3.2 Create your own implmentation of XML-RPC services, for instance MetaWeblogXmlRpcService
+### 3.2 Create your own implmentation of XML-RPC services, for instance MetaWeblogXmlRpcService
 `
 using AspNetCore.XmlRpc.MetaWeblog;
 using AspNetCore.XmlRpc.MetaWeblog.Models;
@@ -153,14 +157,14 @@ AspNetCore.XmlRpc.WebsiteSample.csproj        [XmlRpcMethod("metaWeblog.editPost
 }
 
 `
-4. Add middleware
+## 4. Add middleware
 `
   app.UseStaticFiles();
 
             // Use XmlRpc middleware
             app.UseMetaWeblog(xmlRpcOptions);
 `
-5. Add links to support auto-detection in client tools like Open Live Writer
+## 5. Add links to support auto-detection in client tools like Open Live Writer
 `
 @using Microsoft.Extensions.Options;
 @using AspNetCore.XmlRpc;
@@ -178,5 +182,5 @@ AspNetCore.XmlRpc.WebsiteSample.csproj        [XmlRpcMethod("metaWeblog.editPost
     ......
 `
 
-6. Sample project
+## 6. Sample project
 Please to project AspNetCore.XmlRpc.WebsiteSample.csproj in the solution
