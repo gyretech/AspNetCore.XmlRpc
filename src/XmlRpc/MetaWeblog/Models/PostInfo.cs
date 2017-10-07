@@ -24,7 +24,7 @@ namespace AspNetCore.XmlRpc.MetaWeblog.Models
         public string wp_slug;
 
         [DataMember(Name = "mt_keywords")]
-        public string[] KeyWords { get; set; }
+        public string KeyWords { get; set; }
 
     }
 }

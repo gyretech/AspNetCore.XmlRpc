@@ -179,7 +179,14 @@ namespace AspNetCore.XmlRpc
                             nameKey,
                             out object value))
                         {
-                            property.SetValue(complexInstance, value);
+                            //TODO: to make it more generic, the whole function needs to be rewritten using similar approach as above. Not changing as the whole function needs to be refactored.
+                            var propertyType = property.PropertyType;
+                            if (propertyType.IsArray)
+                            {
+                                property.SetValue(complexInstance, ConvertValues(propertyType, value));
+                            }
+                            else
+                                property.SetValue(complexInstance, value);
                         }
                     }
 
@@ -211,6 +218,30 @@ namespace AspNetCore.XmlRpc
             {
                 return exception;
             }
+        }
+
+        /// <summary>
+        /// Convert arrays
+        /// </summary>
+        /// <param name="arrayPropertyType"></param>
+        /// <param name="value"></param>
+        /// <returns></returns>
+        internal static dynamic ConvertValues(Type arrayPropertyType, object value)
+        {
+            var values = (object[])value;
+
+            var elementType = arrayPropertyType.GetElementType();
+
+            var listType = typeof(List<>);
+            var genericListType = listType.MakeGenericType(elementType);
+
+            var list = Activator.CreateInstance(genericListType);
+            foreach (var obj in values)
+            {
+                list.GetType().GetMethod("Add").Invoke(list, new[] { obj });
+            }
+
+            return list.GetType().GetMethod("ToArray").Invoke(list, null);
         }
 
         internal static XmlRpcRequest GetRequestInformation(Stream xml)
