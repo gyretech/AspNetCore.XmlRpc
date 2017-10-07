@@ -1,6 +1,4 @@
-﻿using AspNetCore.XmlRpc.MetaWeblog;
-
-namespace AspNetCore.XmlRpc
+﻿namespace AspNetCore.XmlRpc
 {
     /// <summary>
     /// Configurations for Xml Rpc

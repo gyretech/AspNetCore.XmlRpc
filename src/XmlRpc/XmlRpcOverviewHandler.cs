@@ -253,7 +253,7 @@ td {
                 }
                 writer.RenderEndTag();
 
-                context.HttpContext.Response.ContentType = "text/xml";
+                context.HttpContext.Response.ContentType = "text/html";
 
                 await context.HttpContext.Response.WriteAsync(stringWriter.ToString());
             }
