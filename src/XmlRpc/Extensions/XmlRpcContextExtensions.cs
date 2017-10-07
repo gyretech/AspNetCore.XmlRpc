@@ -1,7 +1,5 @@
-﻿using AspNetCore.XmlRpc.MetaWeblog;
-using Microsoft.AspNetCore.Http;
+﻿using Microsoft.AspNetCore.Http;
 using System;
-using System.IO;
 
 namespace AspNetCore.XmlRpc.Extensions
 {
@@ -15,7 +13,7 @@ namespace AspNetCore.XmlRpc.Extensions
         public static string ExtractBlogId(this PathString path)
         {
             var value = path.Value;
-            var index = value.LastIndexOf(Path.PathSeparator);
+            var index = value.LastIndexOf('/');
             var blogId = "";
             if (index >= 0)
             {
@@ -26,19 +24,19 @@ namespace AspNetCore.XmlRpc.Extensions
 
         public static string GenerateRsdUrl(this XmlRpcContext context)
         {
-            string url = string.Concat(context.Options.RsdEndpoint, Path.PathSeparator, context.Values[context.Options.BlogIdTokenName]);
+            string url = string.Concat(context.Options.RsdEndpoint, '/', context.Values[context.Options.BlogIdTokenName]);
             return GenerateAbsoluteUrl(context, url);
         }
 
         public static string GenerateEndpointUrl(this XmlRpcContext context)
         {
-            string url = string.Concat(context.Options.Endpoint, Path.PathSeparator, context.Values[context.Options.BlogIdTokenName]);
+            string url = string.Concat(context.Options.Endpoint, '/', context.Values[context.Options.BlogIdTokenName]);
             return GenerateAbsoluteUrl(context, url);
         }
 
         public static string GenerateSummaryUrl(this XmlRpcContext context)
         {
-            string url = string.Concat(context.Options.SummaryEndpoint, Path.PathSeparator, context.Values[context.Options.BlogIdTokenName]);
+            string url = string.Concat(context.Options.SummaryEndpoint, '/', context.Values[context.Options.BlogIdTokenName]);
             return GenerateAbsoluteUrl(context, url);
         }
 
@@ -72,7 +70,7 @@ namespace AspNetCore.XmlRpc.Extensions
             builder.Host = request.Host.Host;
             if (request.Host.Port.HasValue)
                 builder.Port = request.Host.Port.Value;
-            builder.Path = request.Path.ToString();
+            builder.Path = relativeUrl;
 
             return builder.ToString();
         }

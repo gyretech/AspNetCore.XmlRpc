@@ -88,7 +88,7 @@ namespace AspNetCore.XmlRpc.MetaWeblog
 
                 context.HttpContext.Response.ContentType = "text/xml";
 
-                await context.HttpContext.Response.WriteAsync(xmlWriter.ToString());
+                await ms.CopyToAsync(context.HttpContext.Response.Body);
             }
         }
     }
