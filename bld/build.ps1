@@ -68,7 +68,7 @@ function Pack
 
 function Build-All
 {
-    $libPath = (To-AbsolutePath "..\src\XmlRpcMvc\XmlRpcMvc.csproj")
+    $libPath = (To-AbsolutePath "..\src\XmlRpc\AspNetCore.XmlRpc.csproj")
     Restore -Arguments $libPath
     Build -Arguments $libPath
     Pack -Arguments $libPath
