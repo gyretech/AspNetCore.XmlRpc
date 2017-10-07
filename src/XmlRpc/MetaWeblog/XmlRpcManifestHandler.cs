@@ -38,7 +38,7 @@ namespace AspNetCore.XmlRpc.MetaWeblog
                 {
                     xmlWriter.WriteStartElement("manifest", "http://schemas.microsoft.com/wlw/manifest/weblog");
                     {
-                        xmlWriter.WriteStartElement("options", string.Empty);
+                        xmlWriter.WriteStartElement("options");
                         {
                             //<clientType>Metaweblog</clientType>
                             xmlWriter.WriteStartElement("clientType");

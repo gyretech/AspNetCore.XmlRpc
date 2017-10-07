@@ -1,5 +1,8 @@
 ﻿using AspNetCore.XmlRpc.MetaWeblog;
 using AspNetCore.XmlRpc.MetaWeblog.Models;
+using System;
+using System.Collections.ObjectModel;
+using System.Linq;
 
 namespace AspNetCore.XmlRpc.WebsiteSample.Services
 {
@@ -9,58 +12,85 @@ namespace AspNetCore.XmlRpc.WebsiteSample.Services
         {
         }
 
+        UserInfo user = new UserInfo()
+        {
+            Email = "test@notexistingdomain.com",
+            FirstName = "Test",
+            LastName = "AspNetCore",
+            Url = "http://notexistingdomain.com/users/1",
+            UserId = "1",
+            NickName = "Test"
+        };
+
+        CategoryInfo[] categories = new CategoryInfo[] { new CategoryInfo()
+        {
+             Title="Test Cate 1",
+             Description="Test Cate 1 Desc"
+        }
+        };
+
+        BlogInfo blog = new BlogInfo()
+        {
+            Blogid = "TestBlog",
+            BlogName = "Test Blog",
+            Url = "http://notexistingdomain.com/Blog/TestBlog"
+        };
+
+        Collection<PostInfo> posts = new Collection<PostInfo>();
+
         [XmlRpcMethod("blogger.deletePost")]
         public bool DeletePost(string key, string postid, string username, string password, bool publish)
         {
-            throw new System.NotImplementedException();
+            throw new NotImplementedException();
         }
 
         [XmlRpcMethod("metaWeblog.editPost")]
         public string EditPost(string postid, string username, string password, PostInfo post, bool publish)
         {
-            throw new System.NotImplementedException();
+            throw new NotImplementedException();
         }
 
         [XmlRpcMethod("metaWeblog.getCategories")]
         public CategoryInfo[] GetCategories(string blogid, string username, string password)
         {
-            throw new System.NotImplementedException();
+            return categories;
         }
 
         [XmlRpcMethod("metaWeblog.getPost")]
         public PostInfo GetPost(string postid, string username, string password)
         {
-            throw new System.NotImplementedException();
+            throw new NotImplementedException();
         }
 
         [XmlRpcMethod("metaWeblog.getRecentPosts")]
         public PostInfo[] GetRecentPosts(string blogid, string username, string password, int numberOfPosts)
         {
-            throw new System.NotImplementedException();
+            return posts.Take(numberOfPosts).ToArray();
         }
 
         [XmlRpcMethod("blogger.getUserInfo")]
         public UserInfo GetUserInfo(string key, string username, string password)
         {
-            throw new System.NotImplementedException();
+            return user;
         }
 
         [XmlRpcMethod("blogger.getUsersBlogs")]
         public BlogInfo[] GetUsersBlogs(string key, string username, string password)
         {
-            throw new System.NotImplementedException();
+            return new BlogInfo[] { blog };
         }
 
         [XmlRpcMethod("metaWeblog.newMediaObject")]
         public MediaObjectInfo NewMediaObject(string blogid, string username, string password, MediaObject mediaObject)
         {
-            throw new System.NotImplementedException();
+            throw new NotImplementedException();
         }
 
         [XmlRpcMethod("metaWeblog.newPost")]
         public string NewPost(string blogid, string username, string password, PostInfo post, bool publish)
         {
-            throw new System.NotImplementedException();
+            posts.Add(post);
+            return new Guid().ToString();
         }
     }
 }

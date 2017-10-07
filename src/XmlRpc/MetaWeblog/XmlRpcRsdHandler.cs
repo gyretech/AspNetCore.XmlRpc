@@ -41,7 +41,7 @@ namespace AspNetCore.XmlRpc.MetaWeblog
                     xmlWriter.WriteStartElement("rsd", "http://schemas.microsoft.com/wlw/manifest/weblog");
                     {
                         xmlWriter.WriteAttributeString("version", "1.0");
-                        xmlWriter.WriteStartElement("service", string.Empty);
+                        xmlWriter.WriteStartElement("service");
                         {
                             xmlWriter.WriteStartElement("engineName");
                             xmlWriter.WriteString(context.Options.EngineName);
