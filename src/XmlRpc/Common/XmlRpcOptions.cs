@@ -23,5 +23,7 @@
         public string HomePageEndpointPattern { get; set; } = "/Blog/{blogId}";
 
         public string BlogIdTokenName { get; set; } = "blogId";
+
+        public string ManifestEndpoint { get; set; } = "/api/xmlrpc/manifest";
     }
 }

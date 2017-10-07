@@ -35,7 +35,8 @@ namespace AspNetCore.XmlRpc.MetaWeblog
             var xmlRpcContext = new XmlRpcContext(context, Options?.Value, new Dictionary<string, string>(), new Type[] { rpcService.GetType() });
             if (context.Request.Path.StartsWithSegments(xmlRpcContext.Options.SummaryEndpoint)
                 || context.Request.Path.StartsWithSegments(xmlRpcContext.Options.Endpoint)
-                || context.Request.Path.StartsWithSegments(xmlRpcContext.Options.RsdEndpoint))
+                || context.Request.Path.StartsWithSegments(xmlRpcContext.Options.RsdEndpoint) || context.Request.Path.StartsWithSegments(xmlRpcContext.Options.ManifestEndpoint)
+                )
             {
                 // Add blog id into the context.
                 xmlRpcContext.Values.Add(Options?.Value.BlogIdTokenName, context.Request.Path.ExtractBlogId());

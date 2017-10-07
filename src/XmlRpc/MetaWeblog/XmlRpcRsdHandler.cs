@@ -38,8 +38,9 @@ namespace AspNetCore.XmlRpc.MetaWeblog
 
                 xmlWriter.WriteStartDocument();
                 {
-                    xmlWriter.WriteStartElement("manifest", "http://schemas.microsoft.com/wlw/manifest/weblog");
+                    xmlWriter.WriteStartElement("rsd", "http://schemas.microsoft.com/wlw/manifest/weblog");
                     {
+                        xmlWriter.WriteAttributeString("version", "1.0");
                         xmlWriter.WriteStartElement("service", string.Empty);
                         {
                             xmlWriter.WriteStartElement("engineName");
@@ -63,22 +64,7 @@ namespace AspNetCore.XmlRpc.MetaWeblog
                         }
                         xmlWriter.WriteEndElement();
                     }
-                    xmlWriter.WriteStartElement("options", string.Empty);
-                    {
-                        //<clientType>Metaweblog</clientType>
-                        xmlWriter.WriteStartElement("clientType");
-                        xmlWriter.WriteString("Metaweblog");
-                        xmlWriter.WriteEndElement();
-
-                        xmlWriter.WriteStartElement("supportsSlug");
-                        xmlWriter.WriteString("Yes");
-                        xmlWriter.WriteEndElement();
-                        xmlWriter.WriteStartElement("supportsExcerpt");
-                        xmlWriter.WriteString("Yes");
-                        xmlWriter.WriteEndElement();
-                    }
                     xmlWriter.WriteEndElement();
-
                     xmlWriter.WriteEndElement();
                 }
                 xmlWriter.WriteEndDocument();

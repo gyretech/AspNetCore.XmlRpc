@@ -20,7 +20,8 @@ namespace AspNetCore.XmlRpc.MetaWeblog
             {
                 new XmlRpcOverviewHandler(),
                 new XmlRpcHandler(),
-                new XmlRpcRsdHandler()
+                new XmlRpcRsdHandler(),
+                new XmlRpcManifestHandler()
             }
             );
 
