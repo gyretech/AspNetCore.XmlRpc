@@ -203,7 +203,7 @@ namespace AspNetCore.XmlRpc
             }
 
             // ControllerContext is not avalilable in ASP.NET Core and all instance should be instantiated directly through instanceType though controller name and action name can be retrieved through context.
-            var instance = Activator.CreateInstance(instanceType);
+            var instance = context.ServiceProvider.GetService(instanceType);
 
             try
             {

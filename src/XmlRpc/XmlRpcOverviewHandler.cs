@@ -186,7 +186,7 @@ td {
                                                     writer.WriteString(parameter.ParameterType.Name);
                                                 }
                                                 writer.WriteEndElement();
-                                                writer.WriteElementString("td", "");
+                                                
                                                 writer.WriteElementString("td", parameter.Name);
                                             }
                                             writer.WriteEndElement();

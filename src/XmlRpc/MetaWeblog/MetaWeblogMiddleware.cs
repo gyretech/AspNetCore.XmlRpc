@@ -13,11 +13,13 @@ namespace AspNetCore.XmlRpc.MetaWeblog
     {
         private ILogger logger;
         private readonly RequestDelegate next;
+        private readonly IServiceProvider serviceProvider;
 
-        public MetaWeblogMiddleware(RequestDelegate next, ILoggerFactory loggerFactory, IOptions<XmlRpcOptions> options)
+        public MetaWeblogMiddleware(RequestDelegate next, ILoggerFactory loggerFactory, IOptions<XmlRpcOptions> options, IServiceProvider serviceProvider)
         {
             this.next = next;
             Options = options;
+            this.serviceProvider = serviceProvider;
             logger = loggerFactory.CreateLogger<MetaWeblogMiddleware>();
         }
 
@@ -32,7 +34,7 @@ namespace AspNetCore.XmlRpc.MetaWeblog
         /// <returns></returns>
         public async Task Invoke(HttpContext context, IXmlRpcService rpcService, IMetaWeblogEndpointProvider provider)
         {
-            var xmlRpcContext = new XmlRpcContext(context, Options?.Value, new Dictionary<string, string>(), new Type[] { rpcService.GetType() });
+            var xmlRpcContext = new XmlRpcContext(context, Options?.Value, new Dictionary<string, string>(), serviceProvider, new Type[] { rpcService.GetType() });
             if (context.Request.Path.StartsWithSegments(xmlRpcContext.Options.SummaryEndpoint)
                 || context.Request.Path.StartsWithSegments(xmlRpcContext.Options.Endpoint)
                 || context.Request.Path.StartsWithSegments(xmlRpcContext.Options.RsdEndpoint) || context.Request.Path.StartsWithSegments(xmlRpcContext.Options.ManifestEndpoint)

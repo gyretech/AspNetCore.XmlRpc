@@ -1,5 +1,6 @@
 ﻿using AspNetCore.XmlRpc.MetaWeblog;
 using AspNetCore.XmlRpc.MetaWeblog.Models;
+using Microsoft.Extensions.Options;
 using System;
 using System.Collections.ObjectModel;
 using System.Linq;
@@ -8,8 +9,9 @@ namespace AspNetCore.XmlRpc.WebsiteSample.Services
 {
     public class MetaWeblogXmlRpcService : IMetaWeblogXmlRpcService
     {
-        public MetaWeblogXmlRpcService()
+        public MetaWeblogXmlRpcService(IOptions<XmlRpcOptions> options)
         {
+            this.options = options;
         }
 
         UserInfo user = new UserInfo()
@@ -37,6 +39,7 @@ namespace AspNetCore.XmlRpc.WebsiteSample.Services
         };
 
         Collection<PostInfo> posts = new Collection<PostInfo>();
+        private readonly IOptions<XmlRpcOptions> options;
 
         [XmlRpcMethod("blogger.deletePost")]
         public bool DeletePost(string key, string postid, string username, string password, bool publish)

@@ -26,7 +26,7 @@ namespace AspNetCore.XmlRpc.MetaWeblog
             );
 
             // XmlRpc services
-            services.AddScoped<IXmlRpcService, TXmlRpcService>().AddScoped<TXmlRpcService>();
+            services.AddScoped<IXmlRpcService, TXmlRpcService>().AddSingleton<TXmlRpcService>();
 
             // Provider
             services.AddScoped<IMetaWeblogEndpointProvider, TMetaWeblogEndpointService>();
