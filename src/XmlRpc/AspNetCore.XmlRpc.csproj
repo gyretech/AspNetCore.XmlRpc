@@ -14,7 +14,7 @@
     <PackageProjectUrl>https://github.com/FahaoTang/AspNetCore.XmlRpc</PackageProjectUrl>
     <RepositoryUrl>https://github.com/FahaoTang/AspNetCore.XmlRpcMvc</RepositoryUrl>
     <PackageReleaseNotes>Fixed the following issue:
-Slug and Excerpt cannot be parsed correctly. 
+Fixed issues about Array casting.
 </PackageReleaseNotes>
   </PropertyGroup>
   <ItemGroup>

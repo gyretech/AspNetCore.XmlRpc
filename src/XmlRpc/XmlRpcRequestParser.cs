@@ -7,6 +7,7 @@ using System.Reflection;
 using System.Xml;
 using AspNetCore.XmlRpc.Extensions;
 using Microsoft.Extensions.DependencyInjection;
+using System.Collections;
 
 namespace AspNetCore.XmlRpc
 {
@@ -231,7 +232,7 @@ namespace AspNetCore.XmlRpc
         /// <returns></returns>
         internal static dynamic ConvertValues(Type arrayPropertyType, object value)
         {
-            var values = (object[])value;
+            var values = value as IEnumerable;
 
             var elementType = arrayPropertyType.GetElementType();
 
