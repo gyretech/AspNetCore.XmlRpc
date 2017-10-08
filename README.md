@@ -1,4 +1,4 @@
-# AspNetCore.XmlRpc
+3# AspNetCore.XmlRpc
 XML-RPC .NET Standard library with MetaWeblog implementations for ASP.NET Core 2.x
 
 # Build Status
@@ -18,7 +18,7 @@ to be added.
 # How to use
 ## 1. Install the package
 ### Nuget PM
-`Install-Package AspNetCore.XmlRpc -Version 1.0.0-alpha.2`
+`Install-Package AspNetCore.XmlRpc -Version 1.0.0-alpha.3`
 ### MyGet PM
 Refer to [My Get Page](https://www.myget.org/feed/aspnetcore_xmlrpc/package/nuget/AspNetCore.XmlRpc)
 
