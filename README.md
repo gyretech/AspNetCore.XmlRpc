@@ -10,7 +10,7 @@ The answer is: some applications are still using XML-RPC based protocols to comm
 This project is migrated from the .NET 2 version to support ASP.NET Core. A number of components have been refactored to follow .NET Core standards. However not all the components are re-written yet. 
 
 # Documentation
-Detailed documentation will be published at my website [Kosmisch.net](http://kosmisch.net/).
+Detailed documentation will be published at my website [kontext.tech](http://kontext.tech/).
 
 # Automated tests
 to be added. 
