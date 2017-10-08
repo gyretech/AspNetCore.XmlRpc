@@ -18,10 +18,10 @@ namespace AspNetCore.XmlRpc.MetaWeblog.Models
         public string[] Categories { get; set; }
 
         [DataMember(Name = "mt_excerpt")]
-        public string excerpt;
+        public string Excerpt { get; set; }
 
         [DataMember(Name = "wp_slug")]
-        public string wp_slug;
+        public string Slug { get; set; }
 
         [DataMember(Name = "mt_keywords")]
         public string KeyWords { get; set; }
