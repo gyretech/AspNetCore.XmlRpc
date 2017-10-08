@@ -18,12 +18,13 @@ to be added.
 # How to use
 ## 1. Install the package
 ### Nuget PM
-`Install-Package AspNetCore.XmlRpc -Version 1.0.0-alpha.1`
+`Install-Package AspNetCore.XmlRpc -Version 1.0.0-alpha.2`
 ### MyGet PM
-`PM> Install-Package AspNetCore.XmlRpc -Version 1.0.0-CI00000 -Source https://www.myget.org/F/aspnetcore_xmlrpc/api/v3/index.json`
+Refer to [My Get Page](https://www.myget.org/feed/aspnetcore_xmlrpc/package/nuget/AspNetCore.XmlRpc)
 
 ## 2. Change appSettings
 Change appSettings.json to add configurations:
+
 `{
   "Logging": {
     "IncludeScopes": false,
@@ -44,19 +45,17 @@ Change appSettings.json to add configurations:
 }`
 
 ## 3. Add services
-### 3.1
-`
-public void ConfigureServices(IServiceCollection services)
-        {
+### 3.1 Register services
+`public void ConfigureServices(IServiceCollection services)
+       {
             services.AddOptions();
-
             // Configure XmlRpc
             services.Configure<XmlRpcOptions>(Configuration.GetSection("XmlRpc"));
             services.AddMetaWeblog<MetaWeblogXmlRpcService, DefaultMetaWeblogEndpointProvider>();
 
             services.AddMvc();
-        }
-`
+        }`
+
 ### 3.2 Create your own implmentation of XML-RPC services, for instance MetaWeblogXmlRpcService
 `
 using AspNetCore.XmlRpc.MetaWeblog;
@@ -69,117 +68,19 @@ namespace AspNetCore.XmlRpc.WebsiteSample.Services
 {
     public class MetaWeblogXmlRpcService : IMetaWeblogXmlRpcService
     {
-        public MetaWeblogXmlRpcService()
-        {
-        }
-
-        UserInfo user = new UserInfo()
-        {
-            Email = "test@notexistingdomain.com",
-            FirstName = "Test",
-            LastName = "AspNetCore",
-            Url = "http://notexistingdomain.com/users/1",
-            UserId = "1",
-            NickName = "Test"
-        };
-
-        CategoryInfo[] categories = new CategoryInfo[] { new CategoryInfo()
-        {
-             Title="Test Cate 1",
-             Description="Test Cate 1 Desc"
-        }
-        };
-
-        BlogInfo blog = new BlogInfo()
-        {
-            Blogid = "TestBlog",
-            BlogName = "Test Blog",
-            Url = "http://notexistingdomain.com/Blog/TestBlog"
-        };
-
-        Collection<PostInfo> posts = new Collection<PostInfo>();
-
-        [XmlRpcMethod("blogger.deletePost")]
-        public bool DeletePost(string key, string postid, string username, string password, bool publish)
-        {
-            throw new NotImplementedException();
-        }
-
-AspNetCore.XmlRpc.WebsiteSample.csproj        [XmlRpcMethod("metaWeblog.editPost")]
-        public string EditPost(string postid, string username, string password, PostInfo post, bool publish)
-        {
-            throw new NotImplementedException();
-        }
-
-        [XmlRpcMethod("metaWeblog.getCategories")]
-        public CategoryInfo[] GetCategories(string blogid, string username, string password)
-        {
-            return categories;
-        }
-
-        [XmlRpcMethod("metaWeblog.getPost")]
-        public PostInfo GetPost(string postid, string username, string password)
-        {
-            throw new NotImplementedException();
-        }
-
-        [XmlRpcMethod("metaWeblog.getRecentPosts")]
-        public PostInfo[] GetRecentPosts(string blogid, string username, string password, int numberOfPosts)
-        {
-            return posts.Take(numberOfPosts).ToArray();
-        }
-
-        [XmlRpcMethod("blogger.getUserInfo")]
-        public UserInfo GetUserInfo(string key, string username, string password)
-        {
-            return user;
-        }
-
-        [XmlRpcMethod("blogger.getUsersBlogs")]
-        public BlogInfo[] GetUsersBlogs(string key, string username, string password)
-        {
-            return new BlogInfo[] { blog };
-        }
-
-        [XmlRpcMethod("metaWeblog.newMediaObject")]
-        public MediaObjectInfo NewMediaObject(string blogid, string username, string password, MediaObject mediaObject)
-        {
-            throw new NotImplementedException();
-        }
-
-        [XmlRpcMethod("metaWeblog.newPost")]
-        public string NewPost(string blogid, string username, string password, PostInfo post, bool publish)
-        {
-            posts.Add(post);
-            return new Guid().ToString();
-        }
+    //... implement the interface
     }
 }
-
 `
 ## 4. Add middleware
-`
-  app.UseStaticFiles();
-
-            // Use XmlRpc middleware
-            app.UseMetaWeblog(xmlRpcOptions);
+`app.UseStaticFiles();
+  // Use XmlRpc middleware
+  app.UseMetaWeblog();
 `
 ## 5. Add links to support auto-detection in client tools like Open Live Writer
 `
-@using Microsoft.Extensions.Options;
-@using AspNetCore.XmlRpc;
-@inject IOptions<XmlRpcOptions> options;
-
-<!DOCTYPE html>
-<html>
-<head>
-    <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>@ViewData["Title"] - AspNetCore.WebsiteSample</title>
-
-    <link rel="EditURI" type="application/rsd+xml" title="RSD" href="@string.Concat(options.Value.RsdEndpoint,'/', "TestBlog")"  />
-    <link rel="wlwmanifest" type="application/wlwmanifest+xml" href="@string.Concat(options.Value.ManifestEndpoint,'/', "TestBlog")" />
-    ......
+<link rel="EditURI" type="application/rsd+xml" title="RSD" href="@string.Concat(options.Value.RsdEndpoint,'/', "TestBlog")"  />
+<link rel="wlwmanifest" type="application/wlwmanifest+xml" href="@string.Concat(options.Value.ManifestEndpoint,'/', "TestBlog")" />
 `
 
 ## 6. Sample project
