@@ -14,10 +14,8 @@
     <PackageProjectUrl>https://github.com/FahaoTang/AspNetCore.XmlRpc</PackageProjectUrl>
     <RepositoryUrl>https://github.com/FahaoTang/AspNetCore.XmlRpcMvc</RepositoryUrl>
     <PackageReleaseNotes>Fixed the following issue:
-XML-RPC service could not created properly if a constructor is defined with parameters.
-
-Improvements:
-For summary endpoint, changed html text writer to XmlWriter to remove the dependency on third party library.</PackageReleaseNotes>
+Slug and Excerpt cannot be parsed correctly. 
+</PackageReleaseNotes>
   </PropertyGroup>
   <ItemGroup>
     <Folder Include="Properties\" />
