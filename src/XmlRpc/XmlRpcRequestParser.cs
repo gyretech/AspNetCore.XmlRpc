@@ -6,6 +6,7 @@ using System.Linq;
 using System.Reflection;
 using System.Xml;
 using AspNetCore.XmlRpc.Extensions;
+using Microsoft.Extensions.DependencyInjection;
 
 namespace AspNetCore.XmlRpc
 {
@@ -203,20 +204,22 @@ namespace AspNetCore.XmlRpc
             }
 
             // ControllerContext is not avalilable in ASP.NET Core and all instance should be instantiated directly through instanceType though controller name and action name can be retrieved through context.
-            var instance = context.ServiceProvider.GetService(instanceType);
-
-            try
+            using (var scope = context.ServiceScopeFactory.CreateScope())
             {
-                Trace.TraceInformation(
-                    "XmlRpcMvc: Invoking method {0} with '{1}'",
-                    method.Name,
-                    string.Join(", ", parameters));
+                var instance = scope.ServiceProvider.GetRequiredService(instanceType);
+                try
+                {
+                    Trace.TraceInformation(
+                        "XmlRpcMvc: Invoking method {0} with '{1}'",
+                        method.Name,
+                        string.Join(", ", parameters));
 
-                return method.Invoke(instance, parameters.ToArray());
-            }
-            catch (XmlRpcFaultException exception)
-            {
-                return exception;
+                    return method.Invoke(instance, parameters.ToArray());
+                }
+                catch (XmlRpcFaultException exception)
+                {
+                    return exception;
+                }
             }
         }
 

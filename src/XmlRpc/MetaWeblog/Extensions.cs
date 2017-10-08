@@ -26,7 +26,7 @@ namespace AspNetCore.XmlRpc.MetaWeblog
             );
 
             // XmlRpc services
-            services.AddScoped<IXmlRpcService, TXmlRpcService>().AddSingleton<TXmlRpcService>();
+            services.AddScoped<IXmlRpcService, TXmlRpcService>().AddScoped<TXmlRpcService>();
 
             // Provider
             services.AddScoped<IMetaWeblogEndpointProvider, TMetaWeblogEndpointService>();
@@ -41,9 +41,9 @@ namespace AspNetCore.XmlRpc.MetaWeblog
         /// <param name="builder"></param>
         /// <param name="apiUri"></param>
         /// <returns></returns>
-        public static IApplicationBuilder UseMetaWeblog(this IApplicationBuilder builder, IOptions<XmlRpcOptions> options)
+        public static IApplicationBuilder UseMetaWeblog(this IApplicationBuilder builder)
         {
-            return builder.UseMiddleware<MetaWeblogMiddleware>(options);
+            return builder.UseMiddleware<MetaWeblogMiddleware>();
         }
     }
 }

@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Http;
+using Microsoft.Extensions.DependencyInjection;
 using System;
 using System.Collections.Generic;
 
@@ -9,12 +10,13 @@ namespace AspNetCore.XmlRpc
     /// </summary>
     public class XmlRpcContext
     {
-        public XmlRpcContext(HttpContext httpContext, XmlRpcOptions options, Dictionary<string, string> values, IServiceProvider serviceProvider, params Type[] services)
+        public XmlRpcContext(HttpContext httpContext, XmlRpcOptions options, Dictionary<string, string> values, IServiceProvider serviceProvider, IServiceScopeFactory serviceScopeFactory, params Type[] services)
         {
             HttpContext = httpContext;
             Options = options;
             Values = values;
             ServiceProvider = serviceProvider;
+            ServiceScopeFactory = serviceScopeFactory;
             Services = services;
         }
 
@@ -22,6 +24,7 @@ namespace AspNetCore.XmlRpc
         public XmlRpcOptions Options { get; }
         public Dictionary<string, string> Values { get; }
         public IServiceProvider ServiceProvider { get; }
+        public IServiceScopeFactory ServiceScopeFactory { get; }
         public Type[] Services { get; }
     }
 }

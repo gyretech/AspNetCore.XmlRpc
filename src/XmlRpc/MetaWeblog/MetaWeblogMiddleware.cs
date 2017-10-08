@@ -1,5 +1,7 @@
 ﻿using AspNetCore.XmlRpc.Extensions;
+using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using System;
@@ -34,7 +36,8 @@ namespace AspNetCore.XmlRpc.MetaWeblog
         /// <returns></returns>
         public async Task Invoke(HttpContext context, IXmlRpcService rpcService, IMetaWeblogEndpointProvider provider)
         {
-            var xmlRpcContext = new XmlRpcContext(context, Options?.Value, new Dictionary<string, string>(), serviceProvider, new Type[] { rpcService.GetType() });
+            var scopeFactory = serviceProvider.GetRequiredService<IServiceScopeFactory>();
+            var xmlRpcContext = new XmlRpcContext(context, Options?.Value, new Dictionary<string, string>(), serviceProvider, scopeFactory, new Type[] { rpcService.GetType() });
             if (context.Request.Path.StartsWithSegments(xmlRpcContext.Options.SummaryEndpoint)
                 || context.Request.Path.StartsWithSegments(xmlRpcContext.Options.Endpoint)
                 || context.Request.Path.StartsWithSegments(xmlRpcContext.Options.RsdEndpoint) || context.Request.Path.StartsWithSegments(xmlRpcContext.Options.ManifestEndpoint)

@@ -31,7 +31,7 @@ namespace AspNetCore.WebsiteSample
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
-        public void Configure(IApplicationBuilder app, IHostingEnvironment env, IOptions<XmlRpcOptions> xmlRpcOptions)
+        public void Configure(IApplicationBuilder app, IHostingEnvironment env)
         {
             if (env.IsDevelopment())
             {
@@ -46,7 +46,7 @@ namespace AspNetCore.WebsiteSample
             app.UseStaticFiles();
 
             // Use XmlRpc middleware
-            app.UseMetaWeblog(xmlRpcOptions);
+            app.UseMetaWeblog();
 
             app.UseMvc(routes =>
             {

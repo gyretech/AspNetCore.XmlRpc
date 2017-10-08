@@ -25,6 +25,7 @@ For summary endpoint, changed html text writer to XmlWriter to remove the depend
   <ItemGroup>
     <PackageReference Include="Microsoft.AspNetCore.Http" Version="2.0.0" />
     <PackageReference Include="Microsoft.CSharp" Version="4.4.0" />
+    <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="2.0.0" />
     <PackageReference Include="Microsoft.Extensions.Logging" Version="2.0.0" />
   </ItemGroup>
   </Project>
