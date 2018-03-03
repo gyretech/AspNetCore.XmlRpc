@@ -17,7 +17,7 @@ to be added.
 
 # How to Install
 ## Nuget PM
-`Install-Package AspNetCore.XmlRpc -Version 1.0.0-alpha.4`
+`Install-Package AspNetCore.XmlRpc -Version 1.0.0-alpha.6`
 ## MyGet PM
 Refer to [My Get Page](https://www.myget.org/feed/aspnetcore_xmlrpc/package/nuget/AspNetCore.XmlRpc)
 
