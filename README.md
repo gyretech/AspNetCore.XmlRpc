@@ -15,73 +15,14 @@ Detailed documentation will be published at my website [kontext.tech](http://kon
 # Automated tests
 to be added. 
 
-# How to use
-## 1. Install the package
-### Nuget PM
+# How to Install
+## Nuget PM
 `Install-Package AspNetCore.XmlRpc -Version 1.0.0-alpha.4`
-### MyGet PM
+## MyGet PM
 Refer to [My Get Page](https://www.myget.org/feed/aspnetcore_xmlrpc/package/nuget/AspNetCore.XmlRpc)
 
-## 2. Change appSettings
-Change appSettings.json to add configurations:
+# How to Use
+Refer to [How to Use AspNetCore.XmlRpc](http://kontext.tech/Blog/ToolsAndFrameworks/Archive/2017/10/9/how-to-use-aspnetcorexmlrpc.html)
 
-`{
-  "Logging": {
-    "IncludeScopes": false,
-    "LogLevel": {
-      "Default": "Warning"
-    }
-  },
-  "XmlRpc": {
-    "GenerateSummary": "true",
-    "SummaryEndpoint": "/api/xmlrpc/summary",
-    "RsdEndpoint": "/api/xmlrpc/rsd",
-    "Endpoint": "/api/xmlrpc/endpoint",
-    "EngineName": "AspNetCore.XmlRpc",
-    "BlogIdTokenName": "blogId",
-    "HomePageEndpointPattern": "/Blog/{blogId}",
-    "ManifestEndpoint": "/api/xmlrpc/manifest"
-  }
-}`
-
-## 3. Add services
-### 3.1 Register services
-`public void ConfigureServices(IServiceCollection services)
-       {
-            services.AddOptions();
-            // Configure XmlRpc
-            services.Configure<XmlRpcOptions>(Configuration.GetSection("XmlRpc"));
-            services.AddMetaWeblog<MetaWeblogXmlRpcService, DefaultMetaWeblogEndpointProvider>();
-
-            services.AddMvc();
-        }`
-
-### 3.2 Create your own implmentation of XML-RPC services, for instance MetaWeblogXmlRpcService
-`
-using AspNetCore.XmlRpc.MetaWeblog;
-using AspNetCore.XmlRpc.MetaWeblog.Models;
-using System;
-using System.Collections.ObjectModel;
-using System.Linq;
-
-namespace AspNetCore.XmlRpc.WebsiteSample.Services
-{
-    public class MetaWeblogXmlRpcService : IMetaWeblogXmlRpcService
-    {
-    //... implement the interface
-    }
-}
-`
-## 4. Add middleware
-`app.UseStaticFiles();
-  // Use XmlRpc middleware
-  app.UseMetaWeblog();
-`
-## 5. Add links to support auto-detection in client tools like Open Live Writer
-`
-<link rel="EditURI" type="application/rsd+xml" title="RSD" href="@string.Concat(options.Value.RsdEndpoint,'/', "TestBlog")"  />
-<link rel="wlwmanifest" type="application/wlwmanifest+xml" href="@string.Concat(options.Value.ManifestEndpoint,'/', "TestBlog")" />
-`
-
-## 6. Sample project
+# Sample project
 Please to project AspNetCore.XmlRpc.WebsiteSample.csproj in the solution
