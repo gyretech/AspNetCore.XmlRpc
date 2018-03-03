@@ -26,5 +26,7 @@ namespace AspNetCore.XmlRpc.MetaWeblog.Models
         [DataMember(Name = "mt_keywords")]
         public string KeyWords { get; set; }
 
+        [DataMember(Name = "postid")]
+        public string PostId { get; set; }
     }
 }
