@@ -8,6 +8,8 @@ using System.Xml;
 using AspNetCore.XmlRpc.Extensions;
 using Microsoft.Extensions.DependencyInjection;
 using System.Collections;
+using System.Xml.Linq;
+using System.Xml.XPath;
 
 namespace AspNetCore.XmlRpc
 {
@@ -102,6 +104,8 @@ namespace AspNetCore.XmlRpc
             var method = methodDescriptor.MethodInfo;
             var requiredParameters = method.GetParameters();
 
+            // Validate we have the right amount of parameters
+
             for (var i = 0; i < requiredParameters.Length; i++)
             {
                 var parameter = requiredParameters[i];
@@ -127,22 +131,47 @@ namespace AspNetCore.XmlRpc
                 else if (type.IsArray)
                 {
                     var elementType = type.GetElementType();
+                    object[] arrayParameters;
+                    
+                    try
+                    {
+                        arrayParameters = (object[])request.Parameters[i];
+                    }
+                    catch (ArgumentOutOfRangeException)
+                    {
+                        var defaultArrayType = Array.CreateInstance(elementType,1);;
 
-                    var arrayParameters =
-                        (object[])request.Parameters[i];
-
+                        arrayParameters = (object[]) defaultArrayType;
+                    }
+                    catch (Exception)
+                    {
+                        arrayParameters = (object[])request.Parameters[i];
+                    }
+                    
                     var listType = typeof(List<>);
                     var genericListType = listType.MakeGenericType(elementType);
-
                     var list = Activator.CreateInstance(genericListType);
 
-                    foreach (Dictionary<string, object> values
-                                in arrayParameters)
+                    foreach (Dictionary<string, object> values in arrayParameters)
                     {
-                        var element = Activator.CreateInstance(elementType);
+                        object element;
 
-                        foreach (var property
-                                    in element.GetType().GetProperties())
+                        try
+                        {
+                            element = Activator.CreateInstance(elementType);
+                        }
+                        catch (MissingMethodException)
+                        {
+                            list.GetType()
+                                .GetMethod("Add")
+                                .Invoke(
+                                    list,
+                                    new[] { "" });
+
+                            continue;
+                        }
+                        
+                        foreach (var property in element.GetType().GetProperties())
                         {
                             var nameKey = property.GetSerializationName();
 
@@ -166,30 +195,41 @@ namespace AspNetCore.XmlRpc
                 }
                 else
                 {
-                    var complexInstanceParameters =
-                        (Dictionary<string, object>)request.Parameters[i];
+                    Dictionary<string, object> complexInstanceParameters;
 
-                    var complexInstance =
-                        Activator.CreateInstance(type);
+                    try
+                    {
+                        complexInstanceParameters = (Dictionary<string, object>) request.Parameters[i];
+                    }
+                    catch (ArgumentOutOfRangeException)
+                    {
+                        var defaultType = Activator.CreateInstance(type);
+                        var dic = defaultType.AsDictionary();
+                        //complexInstanceParameters = (Dictionary<string, object>) Activator.CreateInstance(type);
+                        complexInstanceParameters = defaultType.AsDictionary();
+                    }
+                    catch (Exception)
+                    {
+                        complexInstanceParameters = (Dictionary<string, object>) request.Parameters[i];
+                    }
 
-                    foreach (var property in
-                        complexInstance.GetType().GetProperties())
+                    var complexInstance = Activator.CreateInstance(type);
+
+                    foreach (var property in complexInstance.GetType().GetProperties())
                     {
                         var nameKey = property.GetSerializationName();
 
-                        if (complexInstanceParameters.TryGetValue(
+                        if (!complexInstanceParameters.TryGetValue(
                             nameKey,
-                            out object value))
+                            out object value)) continue;
+                        //TODO: to make it more generic, the whole function needs to be rewritten using similar approach as above. Not changing as the whole function needs to be refactored.
+                        var propertyType = property.PropertyType;
+                        if (propertyType.IsArray)
                         {
-                            //TODO: to make it more generic, the whole function needs to be rewritten using similar approach as above. Not changing as the whole function needs to be refactored.
-                            var propertyType = property.PropertyType;
-                            if (propertyType.IsArray)
-                            {
-                                property.SetValue(complexInstance, ConvertValues(propertyType, value));
-                            }
-                            else
-                                property.SetValue(complexInstance, value);
+                            property.SetValue(complexInstance, ConvertValues(propertyType, value));
                         }
+                        else
+                            property.SetValue(complexInstance, value);
                     }
 
                     parameters.Add(complexInstance);
@@ -252,30 +292,109 @@ namespace AspNetCore.XmlRpc
         {
             var request = new XmlRpcRequest();
 
-            var xmlDocument = new XmlDocument();
-            xmlDocument.Load(xml);
+            // Get the document
+            var _doc = XDocument.LoadAsync(xml, LoadOptions.PreserveWhitespace, default).GetAwaiter().GetResult();
 
-            var methodName =
-                xmlDocument.SelectSingleNode("methodCall/methodName");
-            if (methodName != null)
+            //  Get the method
+            var mName = _doc.XPathSelectElement("methodCall/methodName");
+
+            if(mName != null)
             {
-                request.MethodName = methodName.InnerText;
+                request.MethodName = mName.Value;
                 Trace.TraceInformation("Incoming XML-RPC call for method: {0}", request.MethodName);
             }
 
-            var parameters =
-                xmlDocument.SelectNodes("methodCall/params/param/value/*");
-            if (parameters != null)
+            var mParameters = _doc.XPathSelectElements("methodCall/params/param/value/*");
+            if(mParameters != null)
             {
                 request.Parameters = new List<object>();
-                foreach (XmlNode node in parameters)
+                foreach(var node in mParameters)
                 {
                     request.Parameters.Add(GetMethodMember(request, node));
                 }
             }
 
             return request;
+            
         }
+
+        internal static object GetMethodMember(XmlRpcRequest request, XElement node)
+        {
+            switch (node.Name.LocalName)
+            {
+                case "array":
+                    return GetMethodArrayMember(request, node);
+
+                case "struct":
+                    return GetMethodStructMember(request, node);
+
+                default:
+                    return node.Value.ConvertTo(node.Name.LocalName);
+            }
+        }
+
+        internal static object GetMethodArrayMember(
+            XmlRpcRequest request,
+            XElement node)
+        {
+            var xpath = node.GetXPath();
+            var values = node.XPathSelectElements(string.Concat(xpath, "/data/value"));
+
+            var results = new List<object>();
+
+            if (values != null)
+            {
+                results.AddRange(
+                    values.Cast<XElement>().Select(
+                        value =>
+                        value.Name.LocalName.Equals("struct")
+                            ? GetMethodMember(request, value)
+                            : value.Value.ConvertTo(value.Name.LocalName)));
+
+                return results.ToArray();
+            }
+
+            return null;
+        }
+
+        internal static Dictionary<string, object> GetMethodStructMember(
+            XmlRpcRequest request,
+            XElement node)
+        {
+            var xpath = node.GetXPath();
+            var values = node.XPathSelectElements(string.Concat(xpath, "/member"));
+
+            if (values != null)
+            {
+                var dictionary = new Dictionary<string, object>();
+
+                foreach (XElement value in values)
+                {
+                    var memberNameNode = value.Name;
+                    var memberValueNode = value;
+
+                    if (memberNameNode == null || memberValueNode == null)
+                    {
+                        continue;
+                    }
+
+                    var memberName = memberNameNode.LocalName;
+
+                    dictionary.Add(
+                        memberName,
+                        GetMethodMember(
+                            request,
+                            memberValueNode));
+                }
+
+                return dictionary;
+            }
+
+            return null;
+        }
+
+
+        #region OldCode
 
         internal static object GetMethodMember(
             XmlRpcRequest request,
@@ -381,5 +500,7 @@ namespace AspNetCore.XmlRpc
 
             return null;
         }
+
+        #endregion
     }
 }

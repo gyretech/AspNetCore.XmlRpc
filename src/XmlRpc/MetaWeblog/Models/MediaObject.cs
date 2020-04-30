@@ -12,5 +12,8 @@ namespace AspNetCore.XmlRpc.MetaWeblog.Models
 
         [DataMember(Name = "bits")]
         public byte[] Bits { get; set; }
+
+        [DataMember(Name = "overwrite")]
+        public bool Overwrite { get; set; }
     }
 }

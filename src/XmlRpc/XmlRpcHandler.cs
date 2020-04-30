@@ -1,7 +1,9 @@
 using System;
+using System.IO;
 using System.Text;
 using System.Threading.Tasks;
 using System.Xml;
+using System.Xml.Serialization;
 using AspNetCore.XmlRpc.Extensions;
 
 namespace AspNetCore.XmlRpc
@@ -26,12 +28,14 @@ namespace AspNetCore.XmlRpc
                     HttpVerbs.Post.ToString(),
                     StringComparison.OrdinalIgnoreCase))
             {
-                throw new InvalidOperationException();
+                return null;
+                //throw new InvalidOperationException();
             }
 
             var requestInfo =
                 XmlRpcRequestParser.GetRequestInformation(
                     request.Body);
+
 
             if (string.IsNullOrWhiteSpace(requestInfo.MethodName))
             {
@@ -47,7 +51,7 @@ namespace AspNetCore.XmlRpc
                 throw new InvalidOperationException(
                     string.Concat(
                         "There was no implementation of IXmlRpcService ",
-                        "found, that containins a method decorated with ",
+                        "found, that contains a method decorated with ",
                         " the XmlRpcMethodAttribute value'",
                         requestInfo.MethodName,
                         "'."));
@@ -66,19 +70,26 @@ namespace AspNetCore.XmlRpc
                     OmitXmlDeclaration = false,
                     Encoding = new UTF8Encoding(false), // Get rid of BOM
                     Indent = true,
+                    Async = true
                 };
 
-            using (var writer =
-                XmlWriter.Create(response.Body, settings))
+            var writer = XmlWriter.Create(response.Body, settings);
+
+            if (methodInfo.ResponseType == XmlRpcResponseType.Wrapped)
             {
-                if (methodInfo.ResponseType == XmlRpcResponseType.Wrapped)
-                {
-                    WriteWrappedResponse(writer, result);
-                    return Task.CompletedTask;
-                }
-                WriteRawResponse(writer, result);
+                WriteWrappedResponseAsync(writer, result).GetAwaiter().GetResult();
+
+                writer.FlushAsync().ConfigureAwait(false);
+
                 return Task.CompletedTask;
             }
+
+            WriteRawResponseAsync(writer, result).GetAwaiter().GetResult();
+
+            writer.FlushAsync().ConfigureAwait(false);
+
+            return Task.CompletedTask;
+
         }
 
         private bool _generateServiceOverview = true;
@@ -88,49 +99,49 @@ namespace AspNetCore.XmlRpc
             set { _generateServiceOverview = value; }
         }
 
-        private static void WriteRawResponse(
+        private async Task WriteRawResponseAsync(
             XmlWriter output,
             dynamic result)
         {
-            output.WriteStartDocument();
+            await output.WriteStartDocumentAsync();
             {
-                output.WriteStartElement("response");
+                await output.WriteStartElementAsync("","response","");
                 {
                     WriteObject(output, result);
                 }
                 output.WriteEndElement();
             }
-            output.WriteEndDocument();
+            await output.WriteEndDocumentAsync();
         }
 
-        private static void WriteWrappedResponse(
+        private async Task WriteWrappedResponseAsync(
             XmlWriter output,
             dynamic result)
         {
-            output.WriteStartDocument();
+            await output.WriteStartDocumentAsync();
             {
-                output.WriteStartElement("methodResponse");
+                await output.WriteStartElementAsync("","methodResponse","");
                 {
-                    output.WriteStartElement("params");
+                    await output.WriteStartElementAsync("","params","");
                     {
-                        output.WriteStartElement("param");
+                        await output.WriteStartElementAsync("","param","");
                         {
-                            output.WriteStartElement("value");
+                            await output.WriteStartElementAsync("","value","");
                             {
                                 WriteObject(output, result);
                             }
-                            output.WriteEndElement();
+                            await output.WriteEndElementAsync();
                         }
-                        output.WriteEndElement();
+                        await output.WriteEndElementAsync();
                     }
-                    output.WriteEndElement();
+                    await output.WriteEndElementAsync();
                 }
-                output.WriteEndElement();
+                await output.WriteEndElementAsync();
             }
-            output.WriteEndDocument();
+            await output.WriteEndDocumentAsync();
         }
 
-        private static void WriteObject(
+        private void WriteObject(
             XmlWriter xmlWriter,
             dynamic result)
         {
@@ -149,7 +160,7 @@ namespace AspNetCore.XmlRpc
             }
         }
 
-        private static void WriteClass(
+        private void WriteClass(
             XmlWriter xmlWriter,
             Type type,
             object obj)
@@ -183,7 +194,7 @@ namespace AspNetCore.XmlRpc
             xmlWriter.WriteEndElement();
         }
 
-        private static void WriteArray(XmlWriter xmlWriter, dynamic obj)
+        private void WriteArray(XmlWriter xmlWriter, dynamic obj)
         {
             xmlWriter.WriteStartElement("array");
             {

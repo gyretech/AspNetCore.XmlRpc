@@ -13,7 +13,6 @@ namespace AspNetCore.XmlRpc.MetaWeblog
 
         public IEnumerable<IXmlRpcHandler> Handlers { get; set; }
 
-
         public async Task<bool> ProcessAsync(XmlRpcContext context)
         {
             foreach (var handler in Handlers)

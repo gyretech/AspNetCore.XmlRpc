@@ -22,8 +22,7 @@ namespace AspNetCore.XmlRpc.MetaWeblog
                 new XmlRpcHandler(),
                 new XmlRpcRsdHandler(),
                 new XmlRpcManifestHandler()
-            }
-            );
+            });
 
             // XmlRpc services
             services.AddScoped<IXmlRpcService, TXmlRpcService>().AddScoped<TXmlRpcService>();

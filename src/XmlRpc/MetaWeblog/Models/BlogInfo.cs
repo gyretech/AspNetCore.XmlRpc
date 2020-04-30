@@ -12,5 +12,7 @@ namespace AspNetCore.XmlRpc.MetaWeblog.Models
 
         [DataMember(Name = "blogName")]
         public string BlogName { get; set; }
+
+        [DataMember(Name = "isAdmin")] public bool IsAdmin { get; set; }
     }
 }

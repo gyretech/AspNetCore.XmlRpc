@@ -2,7 +2,7 @@
 
 namespace AspNetCore.XmlRpc
 {
-    [AttributeUsage(AttributeTargets.Method, AllowMultiple = false)]
+    [AttributeUsage(AttributeTargets.Method)]
     public class XmlRpcMethodAttribute
         : Attribute
     {
